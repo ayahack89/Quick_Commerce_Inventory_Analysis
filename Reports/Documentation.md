@@ -1,198 +1,115 @@
-## Step1 - Data Audits 
-import pandas as pd
+# Quick Commerce Inventory Analysis
 
-df = pd.read_excel("../data/zepto_v1.xlsx")
+## 1. Overview
 
-print("\n--- SHAPE ---")
-print(df.shape)
+This project analyzes a quick-commerce product inventory dataset, currently using Zepto's data to identify inventory availability issues, stock-out patterns, high-value unavailable products, discounting patterns, and inventory distribution across product categories.
 
-print("\n--- COLUMNS ---")
-print(df.columns.tolist())
+The analysis was carried out using **Python** for data auditing, **PostgreSQL** for structured querying and insight extraction, and **Excel** for visualization and the final report.
 
-print("\n--- FRIST 5 ROWS ---")
-print(df.head())
+## 2. Problem
 
-print("\n--- DATA TYPES ---")
-print(df.dtypes)
+Quick-commerce platforms like Zepto depend heavily on product availability and efficient inventory management. Frequent stock-outs can result in missed sales opportunities, while uneven inventory distribution and aggressive discounting can affect revenue and inventory efficiency.
 
-print("\n--- MISSING VALUES ---")
-print(df.isnull().sum())
+The purpose of this analysis is to examine the available inventory data and identify where stock availability, product prioritization, discounting, and inventory distribution may require attention.
 
-print("\n--- DUPLICATES ---")
-print("Duplicate rows:", df.duplicated().sum())
+## 3. Objective
 
-print("\n--- SUMMARY ---")
-print(df.describe(include="all"))
+The analysis aims to:
 
-## Step2 - SQL Insertion 
-CREATE DATABASE quickcommerce; 
+- Measure the overall stock-out rate.
+- Identify categories with higher stock-out rates.
+- Identify high-value products that are currently unavailable.
+- Analyze discount patterns across categories.
+- Understand inventory distribution across categories.
+- Identify potential areas for inventory optimization.
+- Present the findings through an Excel dashboard.
 
-CREATE TABLE products (
-    product_id SERIAL PRIMARY KEY,
-    category TEXT,
-    name TEXT,
-    mrp NUMERIC,
-    discount_percent NUMERIC,
-    available_quantity INTEGER,
-    discounted_selling_price NUMERIC,
-    weight_in_gms INTEGER,
-    out_of_stock BOOLEAN,
-    quantity INTEGER
-);
+## 4. Dataset
 
-\l             → databases
-\c database    → connect/select database
-\dt            → tables
-\d products    → table structure
-SELECT ...     → actual data
+The dataset used is the Zepto quick-commerce dataset, containing **3,732 product records** across **9 columns**.
 
-### Query
-SELECT category, name, mrp, discount_percent, available_quantity, discounted_selling_price, weight_in_gms, out_of_stock, quantity, COUNT(*) AS duplicate_count FROM products GROUP BY category, name, mrp, discount_percent, available_quantity, discounted_selling_price, weight_in_gms, out_of_stock, quantity HAVING COUNT(*) > 1;
+Key fields include:
 
-### Output
-"Paan Corner"	"Listerine Cool Mint Mouthwash - Mild Taste"	15000	10	6	13500	250	false	250	2
-"Personal Care"	"Listerine Cool Mint Mouthwash - Mild Taste"	15000	10	6	13500	250	false	250	2
+- Category
+- Product name
+- MRP
+- Discount percentage
+- Available quantity
+- Discounted selling price
+- Weight
+- Out-of-stock status
+- Quantity
 
-### Query
-SELECT COUNT(*) as invalid_price_records FROM products WHERE mrp <= 0 OR discounted_selling_price <= 0;
+The dataset covers **14 product categories** and **1,681 unique product names**.
 
-### Output
-1
+| Check           | Result |
+| --------------- | -----: |
+| Records         |  3,732 |
+| Columns         |      9 |
+| Missing values  |      0 |
+| Duplicate rows  |      2 |
+| Categories      |     14 |
+| Unique products |  1,681 |
 
-### Query
-SELECT COUNT(*) AS invalid_inventory_records FROM products WHERE available_quantity < 0;
+## 5. Data Preparation & Audit
 
-### Output
-0
+The audit included:
 
-### Query
-SELECT COUNT(*) AS invalid_WEIGHT_records FROM products WHERE weight_in_gms < 0;
+1. Dataset dimensions
+2. Column names and structure
+3. Data types
+4. Missing values
+5. Duplicate records
+6. Descriptive statistics
 
-### Output
-0
+The dataset contained **no missing values** and **2 duplicate records**.
 
-### Query
-SELECT
-    name,
-    mrp,
-    discount_percent,
-    discounted_selling_price,
-    ROUND(
-        mrp * (1 - discount_percent / 100),
-        2
-    ) AS calculated_price
-FROM products
-LIMIT 20;
+## 6. Data Cleaning & SQL Analysis
 
-### Output
-"Onion"	2500	16	2100	2100.00
-"Tomato Hybrid"	4200	16	3500	3528.00
-"Tender Coconut"	5100	15	4300	4335.00
-"Coriander Leaves"	2000	15	1700	1700.00
-"Ladies Finger "	1400	14	1200	1204.00
-"Potato"	3500	17	2900	2905.00
-"Lemon"	7500	16	6300	6300.00
-"Watermelon "	5800	15	4900	4930.00
-"Capsicum Green "	2300	17	1900	1909.00
-"Chilli Green "	1900	15	1600	1615.00
-"Banana Robusta"	2900	17	2400	2407.00
-"Garlic Indian "	1100	18	900	902.00
-"Cauliflower"	2600	15	2200	2210.00
-"Ginger"	1400	14	1200	1204.00
-"Spinach"	1900	15	1600	1615.00
-"Muskmelon"	4200	16	3500	3528.00
-"Cabbage "	1500	13	1300	1305.00
-"Methi"	3000	16	2500	2520.00
-"Broccoli"	3600	16	3000	3024.00
-"Sapota"	3000	16	2500	2520.00
-
-### Query
-SELECT
-    out_of_stock,
-    MIN(available_quantity) AS minimum_quantity,
-    MAX(available_quantity) AS maximum_quantity,
-    COUNT(*) AS products
-FROM products
-GROUP BY out_of_stock
-ORDER BY out_of_stock;
-
-### Output
-false	1	6	3279
-true	0	0	453
-
-### Query
-SELECT COUNT(*) AS inconsistent_records
-FROM products
-WHERE
-    (out_of_stock = TRUE AND available_quantity > 0)
- OR (out_of_stock = FALSE AND available_quantity = 0);
-
- ### Output
- 0
+Before diving into the analysis, a few foundational questions had to be answered to guide the direction of the insights. The following sections present the key business questions and the SQL queries used to address them.
 
 
+### A. Overall Inventory Health
 
-## Data Quality Assessment
+**How serious is the stock-out problem?**
 
-Total records:             3,732
-Missing values:            0
-Exact duplicate records:   ?
-Invalid prices:            ?
-Invalid discounts:        ?
-Invalid inventory:         ?
-Pricing inconsistencies:   ?
-Stock-status conflicts:    ?
-
-
-## Final OutCome
-### A. Overall inventory health
-### Query
+```sql
 SELECT
     COUNT(*) AS total_products,
     COUNT(*) FILTER (WHERE out_of_stock = TRUE) AS out_of_stock_products,
     COUNT(*) FILTER (WHERE out_of_stock = FALSE) AS available_products,
     ROUND(
-        100.0 * COUNT(*) FILTER (WHERE out_of_stock = TRUE)
-        / COUNT(*), 2
+        100.0 * COUNT(*) FILTER (WHERE out_of_stock = TRUE) / COUNT(*), 2
     ) AS stockout_rate
 FROM products;
+```
 
-### Output
-3732	453	3279	12.14
+**Insight:** The overall stock-out rate stands at **12.14%**, meaning roughly 1 in 8 products is currently unavailable.
 
-### B. Stock-out by category
-### Query
+### B. Stock-out by Category
+
+**Which categories have the highest stock-out rates?**
+
+```sql
 SELECT
     category,
     COUNT(*) AS total_products,
     COUNT(*) FILTER (WHERE out_of_stock = TRUE) AS out_of_stock_products,
     ROUND(
-        100.0 * COUNT(*) FILTER (WHERE out_of_stock = TRUE)
-        / COUNT(*), 2
+        100.0 * COUNT(*) FILTER (WHERE out_of_stock = TRUE) / COUNT(*), 2
     ) AS stockout_rate
 FROM products
 GROUP BY category
 ORDER BY stockout_rate DESC;
+```
 
-### Output
-"category"	"total_products"	"out_of_stock_products"	"stockout_rate"
-"Biscuits"	147	42	28.57
-"Beverages"	129	28	21.71
-"Dairy, Bread & Batter"	129	28	21.71
-"Meats, Fish & Eggs"	63	12	19.05
-"Health & Hygiene"	97	13	13.40
-"Munchies"	514	64	12.45
-"Cooking Essentials"	514	64	12.45
-"Ice Cream & Desserts"	388	45	11.60
-"Chocolates & Candies"	388	45	11.60
-"Packaged Food"	388	45	11.60
-"Home & Cleaning"	194	19	9.79
-"Fruits & Vegetables"	93	6	6.45
-"Personal Care"	344	21	6.10
-"Paan Corner"	344	21	6.10
+**Insight:** **Biscuits (28.57%)**, **Beverages (21.71%)**, and **Dairy, Bread & Batter (21.71%)** show the highest stock-out rates — significantly above the overall average.
 
-### C. High-value unavailable products
-### Query
+### C. High-Value Unavailable Products
+
+**Which high-value products are currently unavailable?**
+
+```sql
 SELECT
     product_id,
     name,
@@ -204,22 +121,15 @@ FROM products
 WHERE out_of_stock = TRUE
 ORDER BY mrp DESC
 LIMIT 10;
+```
 
-### Output
-"product_id"	"name"	"category"	"mrp"	"discount_percent"	"discounted_selling_price"
-1095	"Patanjali Cow's Ghee"	"Munchies"	56500	0	56500
-581	"Patanjali Cow's Ghee"	"Cooking Essentials"	56500	0	56500
-3441	"MamyPoko Pants Standard Diapers, Extra Large (12 - 17 kg)"	"Paan Corner"	39900	7	36900
-3097	"MamyPoko Pants Standard Diapers, Extra Large (12 - 17 kg)"	"Personal Care"	39900	7	36900
-1068	"Aashirvaad Atta With Mutigrains"	"Munchies"	31500	8	28700
-554	"Aashirvaad Atta With Mutigrains"	"Cooking Essentials"	31500	8	28700
-1088	"Everest Kashmiri Lal Chilli Powder"	"Munchies"	31000	10	27900
-574	"Everest Kashmiri Lal Chilli Powder"	"Cooking Essentials"	31000	10	27900
-1060	"Madhur Pure And Hygienic Sugar"	"Munchies"	29500	9	26600
-1250	"RRO Mozzarella Block Cheese"	"Dairy, Bread & Batter"	29500	50	14700
+**Insight:** High-MRP items such as **Patanjali Cow's Ghee (₹565)**, **MamyPoko Diapers (₹399)**, and **Aashirvaad Atta (₹315)** are among the top unavailable products — representing significant lost revenue opportunities.
 
-### D. Discount analysis
-### Query
+### D. Discount Analysis
+
+**How are discounts distributed across categories?**
+
+```sql
 SELECT
     category,
     ROUND(AVG(discount_percent), 2) AS avg_discount,
@@ -228,26 +138,15 @@ SELECT
 FROM products
 GROUP BY category
 ORDER BY avg_discount DESC;
+```
 
-### Output
-"category"	"avg_discount"	"min_discount"	"max_discount"
-"Fruits & Vegetables"	15.46	4.00	23.00
-"Meats, Fish & Eggs"	11.03	0.00	50.00
-"Packaged Food"	8.32	0.00	50.00
-"Ice Cream & Desserts"	8.32	0.00	50.00
-"Chocolates & Candies"	8.32	0.00	50.00
-"Biscuits"	8.24	0.00	51.00
-"Health & Hygiene"	8.05	0.00	50.00
-"Beverages"	7.16	0.00	50.00
-"Cooking Essentials"	7.16	0.00	50.00
-"Munchies"	7.16	0.00	50.00
-"Dairy, Bread & Batter"	7.16	0.00	50.00
-"Personal Care"	6.25	0.00	45.00
-"Paan Corner"	6.25	0.00	45.00
-"Home & Cleaning"	5.68	0.00	18.00
+**Insight:** **Fruits & Vegetables (15.46%)** and **Meats, Fish & Eggs (11.03%)** carry the highest average discounts. Most other categories hover between 5–8%, with maximum discounts reaching up to 51% in Biscuits.
 
-### E. Inventory distribution
-### Query
+### E. Inventory Distribution
+
+**Where is available inventory concentrated?**
+
+```sql
 SELECT
     category,
     SUM(available_quantity) AS total_available_inventory,
@@ -256,35 +155,34 @@ FROM products
 WHERE out_of_stock = FALSE
 GROUP BY category
 ORDER BY total_available_inventory DESC;
+```
 
-### Output
-"category"	"total_available_inventory"	"avg_inventory_per_product"
-"Munchies"	2186	4.86
-"Cooking Essentials"	2186	4.86
-"Packaged Food"	1521	4.43
-"Ice Cream & Desserts"	1521	4.43
-"Chocolates & Candies"	1521	4.43
-"Personal Care"	1458	4.51
-"Paan Corner"	1458	4.51
-"Home & Cleaning"	839	4.79
-"Beverages"	485	4.80
-"Dairy, Bread & Batter"	485	4.80
-"Biscuits"	448	4.27
-"Health & Hygiene"	425	5.06
-"Fruits & Vegetables"	275	3.16
-"Meats, Fish & Eggs"	152	2.98
+**Insight:** **Munchies** and **Cooking Essentials** hold the largest available inventory (2,186 units each), while **Meats, Fish & Eggs (152 units)** and **Fruits & Vegetables (275 units)** hold the least — suggesting potential under-stocking in perishable categories.
 
-## 2. Now analysis has a purpose
+## 8. Key Findings
 
-| Business question                    | SQL output                   |
-| ------------------------------------ | ---------------------------- |
-| How serious is the problem?          | Overall stock-out rate       |
-| Where is the problem?                | Stock-out rate by category   |
-| Which products should we prioritize? | High-value stock-outs        |
-| Is pricing worth reviewing?          | Average discount by category |
-| Where is inventory concentrated?     | Inventory by category        |
+- The overall stock-out rate is **12.14%** a meaningful availability gap.
+- **Biscuits, Beverages, and Dairy/Bread/Batter** are the most stock-out-prone categories.
+- Several **high-MRP products** are currently out of stock, pointing to revenue leakage.
+- Discounting is **uneven** fresh categories are discounted more aggressively than packaged ones.
+- Inventory is **concentrated in Munchies and Cooking Essentials**, while perishables run lean.
 
+## 9. Recommendations
 
+- Prioritize replenishment for **Biscuits, Beverages, and Dairy** categories.
+- Flag high-MRP out-of-stock SKUs for urgent restocking.
+- Re-evaluate discount strategy in **Fruits & Vegetables** to balance volume and margin.
+- Consider increasing buffer stock for **Meats, Fish & Eggs** to reduce stock-out risk.
+- Build a recurring inventory health dashboard in Excel for ongoing monitoring.
 
+## 10. Limitations
 
+- The analysis is based on a **single snapshot** of inventory data no time-series trends.
+- Only **Zepto's dataset** is used; cross-platform comparisons are not possible.
+- Demand-side data (sales velocity, customer searches) is not included.
+- Duplicate records (2) were minor but may slightly affect category-level aggregates.
+- Discounts and MRP are treated as given; promotional context is unknown.
 
+## 11. Final Analysis
+
+This analysis highlights that while Zepto's overall inventory health is reasonable, there are clear pockets of concern particularly in **Biscuits, Beverages, and Dairy**, and among **high-value SKUs**. Discounting is skewed toward fresh produce, and inventory is unevenly distributed across categories. Addressing these gaps through targeted replenishment, smarter discounting, and better inventory balancing can directly improve both availability and revenue efficiency.
