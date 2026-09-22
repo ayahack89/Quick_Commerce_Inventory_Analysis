@@ -60,7 +60,6 @@ The audit included:
 3. Data types
 4. Missing values
 5. Duplicate records
-6. Descriptive statistics
 
 The dataset contained **no missing values** and **2 duplicate records**.
 
@@ -84,7 +83,7 @@ SELECT
 FROM products;
 ```
 
-**Insight:** The overall stock-out rate stands at **12.14%**, meaning roughly 1 in 8 products is currently unavailable.
+The overall stock-out rate stands at **12.14%**, meaning roughly 1 in 8 products is currently unavailable.
 
 ### B. Stock-out by Category
 
@@ -103,7 +102,7 @@ GROUP BY category
 ORDER BY stockout_rate DESC;
 ```
 
-**Insight:** **Biscuits (28.57%)**, **Beverages (21.71%)**, and **Dairy, Bread & Batter (21.71%)** show the highest stock-out rates — significantly above the overall average.
+**Biscuits (28.57%)**, **Beverages (21.71%)**, and **Dairy, Bread & Batter (21.71%)** show the highest stock-out rates — significantly above the overall average.
 
 ### C. High-Value Unavailable Products
 
@@ -123,7 +122,7 @@ ORDER BY mrp DESC
 LIMIT 10;
 ```
 
-**Insight:** High-MRP items such as **Patanjali Cow's Ghee (₹565)**, **MamyPoko Diapers (₹399)**, and **Aashirvaad Atta (₹315)** are among the top unavailable products — representing significant lost revenue opportunities.
+High-MRP items such as **Patanjali Cow's Ghee (₹565)**, **MamyPoko Diapers (₹399)**, and **Aashirvaad Atta (₹315)** are among the top unavailable products — representing significant lost revenue opportunities.
 
 ### D. Discount Analysis
 
@@ -140,7 +139,7 @@ GROUP BY category
 ORDER BY avg_discount DESC;
 ```
 
-**Insight:** **Fruits & Vegetables (15.46%)** and **Meats, Fish & Eggs (11.03%)** carry the highest average discounts. Most other categories hover between 5–8%, with maximum discounts reaching up to 51% in Biscuits.
+**Fruits & Vegetables (15.46%)** and **Meats, Fish & Eggs (11.03%)** carry the highest average discounts. Most other categories hover between 5–8%, with maximum discounts reaching up to 51% in Biscuits.
 
 ### E. Inventory Distribution
 
@@ -157,7 +156,7 @@ GROUP BY category
 ORDER BY total_available_inventory DESC;
 ```
 
-**Insight:** **Munchies** and **Cooking Essentials** hold the largest available inventory (2,186 units each), while **Meats, Fish & Eggs (152 units)** and **Fruits & Vegetables (275 units)** hold the least — suggesting potential under-stocking in perishable categories.
+**Munchies** and **Cooking Essentials** hold the largest available inventory (2,186 units each), while **Meats, Fish & Eggs (152 units)** and **Fruits & Vegetables (275 units)** hold the least — suggesting potential under-stocking in perishable categories.
 
 ## 8. Key Findings
 
@@ -173,7 +172,6 @@ ORDER BY total_available_inventory DESC;
 - Flag high-MRP out-of-stock SKUs for urgent restocking.
 - Re-evaluate discount strategy in **Fruits & Vegetables** to balance volume and margin.
 - Consider increasing buffer stock for **Meats, Fish & Eggs** to reduce stock-out risk.
-- Build a recurring inventory health dashboard in Excel for ongoing monitoring.
 
 ## 10. Limitations
 
@@ -183,6 +181,6 @@ ORDER BY total_available_inventory DESC;
 - Duplicate records (2) were minor but may slightly affect category-level aggregates.
 - Discounts and MRP are treated as given; promotional context is unknown.
 
-## 11. Final Analysis
+## 11. Conclusion
 
 This analysis highlights that while Zepto's overall inventory health is reasonable, there are clear pockets of concern particularly in **Biscuits, Beverages, and Dairy**, and among **high-value SKUs**. Discounting is skewed toward fresh produce, and inventory is unevenly distributed across categories. Addressing these gaps through targeted replenishment, smarter discounting, and better inventory balancing can directly improve both availability and revenue efficiency.

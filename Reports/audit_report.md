@@ -17,7 +17,7 @@ Discounting and inventory distribution also vary across categories, providing ad
 | Out of stock   |    453 |
 | Stock-out rate | 12.14% |
 
-**Finding:** 453 of the 3,732 product records are currently marked as out of stock, representing a 12.14% stock-out rate.
+453 of the 3,732 product records are currently marked as out of stock, representing a 12.14% stock-out rate.
 
 A meaningful portion of the listed assortment is unavailable, which may represent potential lost sales opportunities if customer demand exists for these products.
 
@@ -32,7 +32,7 @@ A meaningful portion of the listed assortment is unavailable, which may represen
 | Health & Hygiene      |         13.40% |
 | ...                   |            ... |
 
-**Finding:** Stock availability differs substantially across categories. Biscuits have the highest stock-out rate at 28.57%, while Personal Care and Paan Corner have the lowest rates at 6.10%.
+Stock availability differs substantially across categories. Biscuits have the highest stock-out rate at 28.57%, while Personal Care and Paan Corner have the lowest rates at 6.10%.
 
 This indicates that inventory availability is not uniform across the assortment. Categories with higher stock-out rates may require further investigation into replenishment frequency, demand patterns, or inventory allocation.
 
@@ -45,19 +45,19 @@ This indicates that inventory availability is not uniform across the assortment.
 | MamyPoko Diapers     | Paan Corner        | 39900 |       7% |         36900 |
 | ...                  | ...                |   ... |      ... |           ... |
 
-**Finding:** Several relatively high-value products are unavailable. The highest-MRP unavailable product in the extracted results is Patanjali Cow's Ghee.
+Several relatively high-value products are unavailable. The highest-MRP unavailable product in the extracted results is Patanjali Cow's Ghee.
 
 High-value stock-outs may deserve additional attention because product unavailability affects the ability to sell those products while they remain listed in the assortment.
 
 ## Discount Analysis
 
-**Finding:** Discounting varies significantly across categories. Fruits & Vegetables has the highest average discount at 15.46%, while Home & Cleaning has the lowest average discount at 5.68%.
+Discounting varies significantly across categories. Fruits & Vegetables has the highest average discount at 15.46%, while Home & Cleaning has the lowest average discount at 5.68%.
 
 Categories with higher discount levels may warrant further investigation to determine whether discounting is aligned with inventory availability and product demand.
 
 ## Inventory Distribution
 
-**Finding:** Available inventory is concentrated in several categories. Munchies and Cooking Essentials each contain 2,186 available units, while Meats, Fish & Eggs has the lowest total available inventory at 152 units.
+Available inventory is concentrated in several categories. Munchies and Cooking Essentials each contain 2,186 available units, while Meats, Fish & Eggs has the lowest total available inventory at 152 units.
 
 This distribution should be interpreted alongside stock-out rates because a large total inventory does not necessarily mean that all products within a category are sufficiently stocked.
 
